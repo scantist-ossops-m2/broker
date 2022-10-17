@@ -42,6 +42,7 @@ describe('header relay', () => {
         url: '/',
         method: 'GET',
         headers: headers,
+        body: Buffer.of(),
       },
       () => {
         expect(requestMock).toHaveBeenCalledTimes(1);

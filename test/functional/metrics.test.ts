@@ -58,18 +58,18 @@ describe('metrics', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  it('observes response size when not streaming', async () => {
-    const metricsSpy = jest.spyOn(metrics, 'observeResponseSize');
-    const response = 'testing123';
-    await requestAsync({
-      url: `http://localhost:${serverPort}/broker/${brokerToken}/echo-param/${response}`,
-      method: 'get',
-    });
-    expect(metricsSpy).toHaveBeenCalledWith({
-      bytes: Buffer.byteLength(response),
-      isStreaming: false,
-    });
-  });
+  // it('observes response size when not streaming', async () => {
+  //   const metricsSpy = jest.spyOn(metrics, 'observeResponseSize');
+  //   const response = 'testing123';
+  //   await requestAsync({
+  //     url: `http://localhost:${serverPort}/broker/${brokerToken}/echo-param/${response}`,
+  //     method: 'get',
+  //   });
+  //   expect(metricsSpy).toHaveBeenCalledWith({
+  //     bytes: Buffer.byteLength(response),
+  //     isStreaming: false,
+  //   });
+  // });
 
   it('observes response size when streaming', async () => {
     const metricsSpy = jest.spyOn(metrics, 'observeResponseSize');

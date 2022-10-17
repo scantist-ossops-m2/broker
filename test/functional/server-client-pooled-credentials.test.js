@@ -62,6 +62,7 @@ test('proxy requests originating from behind the broker server with pooled crede
           {
             version,
             filters,
+            capabilities: ['post-streams'],
           },
           'correct metadata',
         );

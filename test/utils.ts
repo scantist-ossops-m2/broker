@@ -95,7 +95,7 @@ export function createTestServer(echoServerPort = port()) {
   echoServerRoutes.get(
     '/huge-file',
     (req, res) => {
-      res.json({ data: "a".repeat(20971521) });
+      res.json({ data: "a ".repeat(10485761) });
     },
   );
 
