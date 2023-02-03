@@ -740,11 +740,34 @@ For example, to only allow the SHA Media Type accept header for requests to the 
 ```
 
 ### Mounting Secrets
-Sometime it is required to load sensitive configurations (GitHub/Snyk's token) from a file instead from environment variables. Broker is using [dotenv](https://www.npmjs.com/package/dotenv) to load the config, so the process is relatively simple:
+Sometimes it is required to load sensitive configurations (GitHub/Snyk's token) from a file instead from environment variables. Broker is using [dotenv](https://www.npmjs.com/package/dotenv) to load the config, so the process is relatively simple:
 * Create a file named `.env` and put your sensitive config there:
 * Mount this file (for example, using [Kubernetes secret](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume)). Mount the file to be somewhere like `/broker`.
 * Change the workdir of the docker image to be `/broker`/
 Example of such file is located in your broker container at $HOME/.env
+
+### High Availability Mode
+Broker can bring high availability capabilities to both servers and clients. increasing the scalability of the current
+broker to support mainly the addition of “git-clone-through-broker” flow for Snyk Code product for the time being.
+
+By default, high availability mode is disabled, to activate it you should set
+
+```shell
+BROKER_HA_MODE_ENABLED=true
+BROKER_DISPATCHER_BASE_URL=https://api.snyk.io
+```
+
+> These client log lines will ensure that the high availability mode is active
+> ```shell
+> ...
+> checking for HA mode (enabled=true)
+> received server id (serverId=0)
+> broker client is connecting to broker server (url=https://broker.snyk.io, serverId=0)
+> ...
+> ```
+
+Using HA mode introduces the concept of allocated tunnels for each client, scheduling those tunnels across a predictable
+set of broker servers, so a unique client can be connected to the right pod. Scalability would be massively increased.
 
 ### Troubleshooting
 
