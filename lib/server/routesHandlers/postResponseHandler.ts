@@ -94,7 +94,7 @@ export const handlePostResponse = (req: Request, res: Response) => {
             );
           }
         }
-        // req.destroy();
+        req.destroy();
         if (bytesRead < data.length) {
           logger.trace(
             logContext,

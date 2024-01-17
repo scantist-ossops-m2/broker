@@ -145,15 +145,27 @@ class BrokerServerPostResponseHandler {
           // setImmediate(() => {
           //   //   console.log(this.#brokerSrvPostRequestHandler)
           //   console.log('FINISHING');
-          //   this.#brokerSrvPostRequestHandler.removeAllListeners();
+          this.#brokerSrvPostRequestHandler.removeAllListeners();
+          this.#brokerSrvPostRequestHandler.on('error', (e) => {
+            logger.error(
+              {
+                error: e,
+                stackTrace: new Error('stacktrace generator').stack,
+              },
+              'received error sending data via POST to Broker Server',
+            );
+            console.log('ERRROR');
+            this.#buffer.destroy(e);
+            this.#brokerSrvPostRequestHandler.removeAllListeners();
+          });
           // });
-          // console.log('FINISH');
+          console.log('FINISH');
         })
         .on('close', () => {
           // setTimeout(() => {
           //   console.log(this.#brokerSrvPostRequestHandler)
           //   console.log('FINISHING')
-          this.#brokerSrvPostRequestHandler.removeAllListeners();
+          // this.#brokerSrvPostRequestHandler.removeAllListeners();
           // },100)
           console.log('close');
         });
