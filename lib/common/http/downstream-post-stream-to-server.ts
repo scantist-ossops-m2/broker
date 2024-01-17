@@ -142,19 +142,18 @@ class BrokerServerPostResponseHandler {
           }
         })
         .on('finish', () => {
-          setTimeout(() => {
-            //   console.log(this.#brokerSrvPostRequestHandler)
-            console.log('FINISHING');
-
-            this.#brokerSrvPostRequestHandler.removeAllListeners();
-          }, 200);
-          console.log('FINISH');
+          // setImmediate(() => {
+          //   //   console.log(this.#brokerSrvPostRequestHandler)
+          //   console.log('FINISHING');
+          //   this.#brokerSrvPostRequestHandler.removeAllListeners();
+          // });
+          // console.log('FINISH');
         })
         .on('close', () => {
           // setTimeout(() => {
           //   console.log(this.#brokerSrvPostRequestHandler)
           //   console.log('FINISHING')
-          // this.#brokerSrvPostRequestHandler.removeAllListeners();
+          this.#brokerSrvPostRequestHandler.removeAllListeners();
           // },100)
           console.log('close');
         });
