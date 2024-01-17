@@ -104,6 +104,7 @@ class BrokerServerPostResponseHandler {
             'received error sending data via POST to Broker Server',
           );
           this.#buffer.destroy(e);
+          this.#brokerSrvPostRequestHandler.removeAllListeners();
         })
         .on('response', (r) => {
           r.socket.on('error', (err) => {
@@ -139,7 +140,7 @@ class BrokerServerPostResponseHandler {
             );
           }
         })
-        .on('finish', () => {
+        .on('close', () => {
           this.#brokerSrvPostRequestHandler.removeAllListeners();
         });
 
@@ -198,6 +199,7 @@ class BrokerServerPostResponseHandler {
         );
         this.#buffer.write(body);
         this.#buffer.end();
+        this.#brokerSrvPostRequestHandler.emit('close');
       }
     };
   }
@@ -263,6 +265,9 @@ class BrokerServerPostResponseHandler {
         },
       });
       response.on('error', this.#handleRequestError());
+      response.on('end', () => {
+        this.#brokerSrvPostRequestHandler.end();
+      });
 
       if (
         (config && config.LOG_ENABLE_BODY === 'true') ||
