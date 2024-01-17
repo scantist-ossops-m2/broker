@@ -64,6 +64,8 @@ class BrokerServerPostResponseHandler {
     );
   }
 
+  destroy() {}
+
   async #initHttpClientRequest() {
     try {
       const url = new URL(
@@ -98,7 +100,8 @@ class BrokerServerPostResponseHandler {
         .on('error', (e) => {
           logger.error(
             {
-              error: e,
+              errMsg: e.message,
+              errDetails: e,
               stackTrace: new Error('stacktrace generator').stack,
             },
             'received error sending data via POST to Broker Server',
@@ -109,8 +112,8 @@ class BrokerServerPostResponseHandler {
           r.socket.on('error', (err) => {
             logger.error(
               {
-                msg: err.message,
-                err: err,
+                errMsg: err.message,
+                errDetails: err,
                 stackTrace: new Error('stacktrace generator').stack,
               },
               'Stream Socket Response error in POST to Broker Server',
@@ -119,8 +122,8 @@ class BrokerServerPostResponseHandler {
           r.on('error', (err) => {
             logger.error(
               {
-                msg: err.message,
-                err: err,
+                errMsg: err.message,
+                errDetails: err,
                 stackTrace: new Error('stacktrace generator').stack,
               },
               'Stream Response error in POST to Broker Server',
@@ -140,7 +143,13 @@ class BrokerServerPostResponseHandler {
           }
         })
         .on('finish', () => {
+          //setTimeout(() => {
+          logger.debug(
+            this.#logContext,
+            'Finishing Post Request Handler - Removing all listeners in 1000ms',
+          );
           this.#brokerSrvPostRequestHandler.removeAllListeners();
+          // }, 1000);
         });
 
       logger.debug(this.#logContext, 'POST Request Client setup');
