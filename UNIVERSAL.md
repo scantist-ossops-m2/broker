@@ -1,4 +1,4 @@
-# Universal Broker - Prototype
+# Universal Broker - Prototype Only
 
 The Broker has been since its inception a piece of software relaying requests from Snyk to your private network and private SCMs.
 HTTP<===>Server<===>Websocket<===>Client<===>HTTP
