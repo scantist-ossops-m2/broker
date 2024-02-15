@@ -83,11 +83,11 @@ class BrokerServerPostResponseHandler {
           'Content-Type': BROKER_CONTENT_TYPE,
            Connection: 'keep-alive',
           // Connection: 'close',
-          'Keep-Alive': 'timeout=600000, max=1000000',
+          // 'Keep-Alive': 'timeout=600000, max=1000000',
           'user-agent': 'Snyk Broker client ' + version,
         },
         agent: agent,
-        timeout: 600000,
+        // timeout: 600000,
       };
 
       this.#brokerSrvPostRequestHandler = client.request(
