@@ -155,7 +155,7 @@ class BrokerServerPostResponseHandler {
               },
               'received error sending data via POST to Broker Server (post finish event)',
             );
-            this.#buffer.destroy(e);
+            this.#buffer.end(e);
             this.#brokerSrvPostRequestHandler.removeAllListeners();
           });
         });
@@ -201,7 +201,7 @@ class BrokerServerPostResponseHandler {
       // If we *don't* have a buffer object, then there was a major failure with the request (e.g., host not found), so
       // we will forward that directly to the Broker Server
       if (this.#buffer) {
-        this.#buffer.destroy(error);
+        this.#buffer.end(error);
       } else {
         const body = JSON.stringify({ error: error });
         this.#sendIoData(
