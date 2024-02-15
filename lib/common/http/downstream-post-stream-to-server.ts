@@ -81,8 +81,8 @@ class BrokerServerPostResponseHandler {
         headers: {
           'Snyk-Request-Id': `${this.#requestId}`,
           'Content-Type': BROKER_CONTENT_TYPE,
-          //  Connection: 'Keep-Alive',
-          Connection: 'close',
+           Connection: 'keep-alive',
+          // Connection: 'close',
           'Keep-Alive': 'timeout=600000, max=1000000',
           'user-agent': 'Snyk Broker client ' + version,
         },
@@ -233,7 +233,7 @@ class BrokerServerPostResponseHandler {
       let prevPartialChunk;
       response.socket.on('error', (err) => {
         logger.error(
-          {
+          { 
             msg: err.message,
             err: err,
             stackTrace: new Error('stacktrace generator').stack,
