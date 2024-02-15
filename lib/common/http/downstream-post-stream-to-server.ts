@@ -81,7 +81,8 @@ class BrokerServerPostResponseHandler {
         headers: {
           'Snyk-Request-Id': `${this.#requestId}`,
           'Content-Type': BROKER_CONTENT_TYPE,
-          Connection: 'Keep-Alive',
+          //  Connection: 'Keep-Alive',
+          Connection: 'close',
           'Keep-Alive': 'timeout=600000, max=1000000',
           'user-agent': 'Snyk Broker client ' + version,
         },
@@ -107,16 +108,16 @@ class BrokerServerPostResponseHandler {
           this.#buffer.destroy(e);
         })
         .on('response', (r) => {
-          r.socket.on('error', (err) => {
-            logger.error(
-              {
-                errMsg: err.message,
-                errDetails: err,
-                stackTrace: new Error('stacktrace generator').stack,
-              },
-              'Stream Socket Response error in POST to Broker Server',
-            );
-          });
+          // r.socket.on('error', (err) => {
+          //   logger.error(
+          //     {
+          //       errMsg: err.message,
+          //       errDetails: err,
+          //       stackTrace: new Error('stacktrace generator').stack,
+          //     },
+          //     'Stream Socket Response error in POST to Broker Server',
+          //   );
+          // });
           r.on('error', (err) => {
             logger.error(
               {
@@ -143,22 +144,29 @@ class BrokerServerPostResponseHandler {
         .on('finish', () => {
           logger.debug(
             this.#logContext,
-            'Closing Post Request Handler - Removing all listeners',
+            'Finishing Post Request Handler',
           );
-          this.#brokerSrvPostRequestHandler.removeAllListeners();
-          this.#brokerSrvPostRequestHandler.on('error', (e) => {
-            logger.error(
-              {
-                errMsg: e.message,
-                errDetails: e,
-                stackTrace: new Error('stacktrace generator').stack,
-              },
-              'received error sending data via POST to Broker Server (post finish event)',
-            );
-            this.#buffer.end(e);
-            this.#brokerSrvPostRequestHandler.removeAllListeners();
-          });
-        });
+          // this.#brokerSrvPostRequestHandler.destroy()
+          // this.#brokerSrvPostRequestHandler.removeAllListeners();
+          // this.#brokerSrvPostRequestHandler.on('error', (e) => {
+          //   logger.error(
+          //     {
+          //       errMsg: e.message,
+          //       errDetails: e,
+          //       stackTrace: new Error('stacktrace generator').stack,
+          //     },
+          //     'received error sending data via POST to Broker Server (post finish event)',
+          //   );
+          //   // this.#buffer.destroy(e);
+          //   this.#brokerSrvPostRequestHandler.removeAllListeners();
+          // });
+        })
+        .on('close', () => {
+          logger.debug(
+            this.#logContext,
+            'Closing Post Request Handler',
+          );
+        })
 
       logger.debug(this.#logContext, 'POST Request Client setup');
     } catch (err) {
@@ -194,15 +202,15 @@ class BrokerServerPostResponseHandler {
           error,
           stackTrace: new Error('stacktrace generator').stack,
         },
-        'received error from request while piping to Broker Server',
+        'received error from downstream request while piping to Broker Server',
       );
       // If we already have a buffer object, then we've already started sending data back to the original requestor,
       // so we have to destroy the stream and let that flow through the system
       // If we *don't* have a buffer object, then there was a major failure with the request (e.g., host not found), so
       // we will forward that directly to the Broker Server
-      if (this.#buffer) {
-        this.#buffer.end(error);
-      } else {
+      // if (this.#buffer) {
+      //   this.#buffer.end(error);
+      // } else {
         const body = JSON.stringify({ error: error });
         this.#sendIoData(
           JSON.stringify({
@@ -215,7 +223,7 @@ class BrokerServerPostResponseHandler {
         );
         this.#buffer.write(body);
         this.#buffer.end();
-      }
+      // }
     };
   }
 
@@ -280,7 +288,7 @@ class BrokerServerPostResponseHandler {
         },
       });
       response.on('error', this.#handleRequestError());
-
+      
       if (
         (config && config.LOG_ENABLE_BODY === 'true') ||
         (config.RES_BODY_URL_SUB && isResponseJson)
