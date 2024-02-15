@@ -14,10 +14,10 @@ const BROKER_CONTENT_TYPE = 'application/vnd.broker.stream+octet-stream';
 
 const client = config.brokerServerUrl?.startsWith('https') ? https : http;
 
-const agent = new client.Agent({
-  keepAlive: true,
-  // keepAliveMsecs: 600000,
-});
+// const agent = new client.Agent({
+//   keepAlive: true,
+//   // keepAliveMsecs: 600000,
+// });
 
 if (process.env.HTTP_PROXY || process.env.http_proxy) {
   process.env.HTTP_PROXY = process.env.HTTP_PROXY || process.env.http_proxy;
@@ -81,12 +81,12 @@ class BrokerServerPostResponseHandler {
         headers: {
           'Snyk-Request-Id': `${this.#requestId}`,
           'Content-Type': BROKER_CONTENT_TYPE,
-           Connection: 'keep-alive',
+          //  Connection: 'keep-alive',
           // Connection: 'close',
           // 'Keep-Alive': 'timeout=600000, max=1000000',
           'user-agent': 'Snyk Broker client ' + version,
         },
-        agent: agent,
+        // agent: agent,
         // timeout: 600000,
       };
 
