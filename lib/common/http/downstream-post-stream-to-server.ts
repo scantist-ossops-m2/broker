@@ -105,7 +105,7 @@ class BrokerServerPostResponseHandler {
             },
             'received error sending data via POST to Broker Server',
           );
-          this.#buffer.destroy(e);
+          this.#buffer.end(e);
         })
         .on('response', (r) => {
           // r.socket.on('error', (err) => {
