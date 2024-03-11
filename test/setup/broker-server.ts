@@ -62,7 +62,7 @@ export const waitForBrokerClientConnection = async (
 
       spark.on('identify', (clientData) => {
         LOG.debug({ clientData }, 'on identify event for broker server');
-
+        
         brokerToken = clientData?.token;
         metadata = clientData?.metadata;
         resolve({
