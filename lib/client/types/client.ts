@@ -50,6 +50,8 @@ export interface WebSocketConnection {
   send: any;
   capabilities?: any;
   on: (string, any) => any;
+  end: () => {};
+  open: () => {};
   readyState: any;
 }
 // export interface WebSocketConnection {

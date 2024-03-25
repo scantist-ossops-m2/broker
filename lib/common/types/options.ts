@@ -6,8 +6,13 @@ export interface ClientOpts {
   filters: FiltersType | Map<string, FiltersType>;
   serverId?: string;
   connections?: Record<string, any>;
+  accessToken: JWT | undefined;
 }
 
+interface JWT {
+  expiresIn: any;
+  authHeader: string;
+}
 export interface ServerOpts {
   port: number;
   config: Record<string, any>;
