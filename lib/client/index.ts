@@ -18,6 +18,7 @@ import { loadAllFilters } from '../common/filter/filtersAsync';
 import { ClientOpts, LoadedClientOpts } from '../common/types/options';
 import { websocketConnectionSelectorMiddleware } from './routesHandler/websocketConnectionMiddlewares';
 import { fetchJwt } from './auth/oauth';
+import { getClientConfigMetadata } from './utils/configHelpers';
 
 process.on('uncaughtException', (error) => {
   if (error.message == 'read ECONNRESET') {
@@ -70,6 +71,7 @@ export const main = async (clientOpts: ClientOpts) => {
       filters: clientOpts.filters,
       preflightChecks: hookResults.preflightCheckResults,
       version,
+      clientConfig: getClientConfigMetadata(clientOpts.config),
     };
 
     let websocketConnections: WebSocketConnection[] = [];
