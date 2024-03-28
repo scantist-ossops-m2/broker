@@ -18,6 +18,7 @@ import { initializeSocketHandlers } from './socketHandlers/init';
 
 import { LoadedClientOpts } from '../common/types/options';
 import { translateIntegrationTypeToBrokerIntegrationType } from './utils/integrations';
+import { fetchJwt } from './auth/oauth';
 
 export const createWebSockets = (
   clientOpts: LoadedClientOpts,
@@ -76,18 +77,27 @@ export const createWebSocket = (
 
   // Will exponentially back-off from 0.5 seconds to a maximum of 20 minutes
   // Retry for a total period of around 4.5 hours
+  const socketSettings = {
+    reconnect: {
+      factor: 1.5,
+      retries: 30,
+      max: 20 * 60 * 1000,
+    },
+    ping: parseInt(localClientOps.config.socketPingInterval) || 25000,
+    pong: parseInt(localClientOps.config.socketPongTimeout) || 10000,
+    timeout: parseInt(localClientOps.config.socketConnectTimeout) || 10000,
+  };
+
+  if (clientOpts.accessToken) {
+    socketSettings['transport'] = {
+      extraHeaders: {
+        Authorization: clientOpts.accessToken?.authHeader,
+      },
+    };
+  }
   const websocket: WebSocketConnection = new Socket(
     localClientOps.config.brokerServerUrlForSocket,
-    {
-      reconnect: {
-        factor: 1.5,
-        retries: 30,
-        max: 20 * 60 * 1000,
-      },
-      ping: parseInt(localClientOps.config.socketPingInterval) || 25000,
-      pong: parseInt(localClientOps.config.socketPongTimeout) || 10000,
-      timeout: parseInt(localClientOps.config.socketConnectTimeout) || 10000,
-    },
+    socketSettings,
   );
   websocket.socketVersion = 1;
   websocket.socketType = 'client';
@@ -99,6 +109,38 @@ export const createWebSocket = (
     websocket.friendlyName = identifyingMetadata.friendlyName || '';
   }
   websocket.clientConfig = identifyingMetadata.clientConfig;
+
+  if (clientOpts.accessToken) {
+    let timeoutHandlerId;
+    let timeoutHandler = async () => {};
+    timeoutHandler = async () => {
+      logger.debug({}, 'Refreshing oauth access token');
+      clearTimeout(timeoutHandlerId);
+      clientOpts.accessToken = await fetchJwt(
+        clientOpts.config.API_BASE_URL,
+        clientOpts.config.brokerClientConfiguration.common.oauth!.clientId,
+        clientOpts.config.brokerClientConfiguration.common.oauth!.clientSecret,
+      );
+
+      websocket.transport.extraHeaders['Authorization'] =
+        clientOpts.accessToken!.authHeader;
+      websocket.end();
+      websocket.open();
+      timeoutHandlerId = setTimeout(
+        timeoutHandler,
+        (clientOpts.accessToken!.expiresIn - 60) * 1000,
+      );
+    };
+
+    timeoutHandlerId = setTimeout(
+      timeoutHandler,
+      (clientOpts.accessToken!.expiresIn - 60) * 1000,
+    );
+  }
+
+  websocket.on('incoming::error', (e) => {
+    websocket.emit('error', { type: e.type, description: e.description });
+  });
 
   logger.info(
     {

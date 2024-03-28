@@ -75,6 +75,9 @@ describe('config', () => {
     process.env.BROKER_TOKEN_4 = 'brokertoken4';
     process.env.JIRA_PAT = 'jirapat';
     process.env.JIRA_HOSTNAME = 'hostname';
+    delete process.env.CLIENT_ID;
+    delete process.env.CLIENT_SECRET;
+
     loadBrokerConfig();
     const configData = getConfigForIdentifier(
       'dummyBrokerIdentifier3',
@@ -98,6 +101,8 @@ describe('config', () => {
       identifier: 'dummyBrokerIdentifier3',
       type: 'azure-repos',
     });
+    delete process.env.CLIENT_ID;
+    delete process.env.CLIENT_SECRET;
   });
 
   it('getConfigByidentifier', () => {
@@ -111,6 +116,8 @@ describe('config', () => {
     process.env.BROKER_TOKEN_4 = 'brokertoken4';
     process.env.JIRA_PAT = 'jirapat';
     process.env.JIRA_HOSTNAME = 'hostname';
+    process.env.CLIENT_ID = 'clienid';
+    process.env.CLIENT_SECRET = 'clientsecret';
     loadBrokerConfig();
     const configData = getConfigForIdentifier(
       'dummyBrokerIdentifier',
@@ -141,6 +148,8 @@ describe('config', () => {
     delete process.env.BROKER_TOKEN_1;
     delete process.env.BROKER_TOKEN_2;
     delete process.env.BROKER_TOKEN_3;
+    delete process.env.CLIENT_ID;
+    delete process.env.CLIENT_SECRET;
   });
 
   it('getConfigByidentifier with global BROKER_CLIENT_URL', () => {
@@ -152,6 +161,8 @@ describe('config', () => {
     process.env.BROKER_TOKEN_1 = 'dummyBrokerIdentifier';
     process.env.BROKER_TOKEN_2 = 'dummyBrokerIdentifier2';
     process.env.BROKER_TOKEN_3 = 'dummyBrokerIdentifier3';
+    process.env.CLIENT_ID = 'clienid';
+    process.env.CLIENT_SECRET = 'clientsecret';
     loadBrokerConfig();
     const configData = getConfigForIdentifier(
       'dummyBrokerIdentifier',
@@ -184,6 +195,8 @@ describe('config', () => {
     delete process.env.BROKER_TOKEN_1;
     delete process.env.BROKER_TOKEN_2;
     delete process.env.BROKER_TOKEN_3;
+    delete process.env.CLIENT_ID;
+    delete process.env.CLIENT_SECRET;
   });
 
   it('fails to load if missing env var', () => {

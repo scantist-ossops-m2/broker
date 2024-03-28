@@ -40,6 +40,9 @@ const dummyWebsocketHandler: WebSocketConnection = {
   transport: '',
   url: '',
   on: () => {},
+  end: () => {},
+  open: () => {},
+  emit: () => {},
   readyState: 3,
 };
 
